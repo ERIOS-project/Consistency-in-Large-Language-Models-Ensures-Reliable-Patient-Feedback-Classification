@@ -54,4 +54,4 @@ tone = c("positive","negative")
 
 
 index = readRDS("data/sample/index.rds")
-matrixGS = readRDS("data/gold_standard/matrixGS.rds")
+matrixGS = readRDS("data/gold_standard/matrix_GS.rds")

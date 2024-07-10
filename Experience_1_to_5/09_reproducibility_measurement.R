@@ -38,8 +38,6 @@ print(paste("Global Krippendorf's alpha between GPT4s standalone :", global_K_al
 
 #Compute global Krippendorff alpha for GPT4+ECA
 thresholded_matrix = matrix_GPT4_CA
-thresholded_matrix[thresholded_matrix>=24/35] = 1
-thresholded_matrix[thresholded_matrix!=1] = 0
 flatten_matrix = matrix(data=NA, nrow = length(index)* length(category)* length(tone), ncol = length(agent))
 for(current_category in 1:length(category)){
   for(current_tone in 1:length(tone)){

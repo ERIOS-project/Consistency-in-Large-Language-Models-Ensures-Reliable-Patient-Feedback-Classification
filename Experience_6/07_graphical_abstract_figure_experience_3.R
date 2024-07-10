@@ -1,4 +1,5 @@
 
+# This below correspond to the pr_table computed in script 06
 
 data = data.frame(
   model =c("Naive Bayes","Llama 3","LSTM","Regex","Llama 3 + GCA","GPT 4","GPT 4 + GCA"),

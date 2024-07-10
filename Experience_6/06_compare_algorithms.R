@@ -1,12 +1,12 @@
 matrix_Regex = readRDS("data/regex/matrix_Regex.rds")
 matrix_NB = readRDS("data/NB/matrix_NB.rds")
 matrix_LSTM = readRDS("data/LSTM/matrix_LSTM.rds")
-matrix_GPT4_CA = readRDS("data/GPT4/matrix_GPT4.rds")
+matrix_GPT4_CA = readRDS("data/GPT4/matrix_GPT4_CA.rds")
 matrix_GS = readRDS("data/gold_standard/matrix_GS.rds")
-matrix_Llama3_CA = readRDS("data/06_Llama3/matrix_Llama3.rds")
+matrix_Llama3_CA = readRDS("data/Llama3/matrix_Llama3_CA.rds")
 # matrix_GPT4_CA without post production
-matrix_GPT4_standalone = readRDS("data/02_GPT4/matrix_GPT4_standalone.rds")
-matrix_Llama3_standalone = readRDS("data/06_Llama3/matrix_Llama3_standalone.rds")
+matrix_GPT4_standalone = readRDS("data/GPT4/matrix_GPT4_standalone.rds")
+matrix_Llama3_standalone = readRDS("data/Llama3/matrix_Llama3_standalone.rds")
 
 # To provide custom sub-group results
 # matrix_Regex = matrix_Regex[,,tone=="positive"]
@@ -75,7 +75,7 @@ for(i in thresholds){
 pr_Llama3_CA = rbind(c(0,max(pr_Llama3_CA[,"recall"])+0.0001),pr_Llama3_CA,c(max(pr_Llama3_CA[,"precision"]),0))
 
 
-# precision and recall curve computation for GPT4 wopp
+# precision and recall curve computation for GPT4 standalone
 pr_gpt4_standalone = matrix(nrow=0,ncol=2, dimnames = list(logical(),c("precision","recall")))
 for(i in thresholds){
   precision = length(which(matrix_GPT4_standalone[matrix_GS==1]>=i)) / length(which(matrix_GPT4_standalone>=i))
@@ -85,7 +85,7 @@ for(i in thresholds){
 }
 pr_gpt4_standalone = rbind(c(0,max(pr_gpt4_standalone[,"recall"])+0.0001),pr_gpt4_standalone,c(max(pr_gpt4_standalone[,"precision"]),0))
 
-# precision and recall curve computation for Llama3 wopp
+# precision and recall curve computation for Llama3 standalone
 pr_Llama3_standalone = matrix(nrow=0,ncol=2, dimnames = list(logical(),c("precision","recall")))
 for(i in thresholds){
   precision = length(which(matrix_Llama3_standalone[matrix_GS==1]>=i)) / length(which(matrix_Llama3_standalone>=i))
@@ -188,10 +188,10 @@ library(ggplot2)
 df_regex <- data.frame(Recall = pr_regex[,"recall"], Precision = pr_regex[,"precision"], Model = 'Regex')
 df_nb <- data.frame(Recall = pr_nb[,"recall"], Precision = pr_nb[,"precision"], Model = 'Naive Bayes')
 df_lstm <- data.frame(Recall = pr_lstm[,"recall"], Precision = pr_lstm[,"precision"], Model = 'LSTM')
-df_gpt4_CA <- data.frame(Recall = pr_gpt4_CA[,"recall"], Precision = pr_gpt4_CA[,"precision"], Model = 'GPT-4')
-df_Llama3_CA <- data.frame(Recall = pr_Llama3_CA[,"recall"], Precision = pr_Llama3_CA[,"precision"], Model = 'Llama-3')
-df_gpt4_standalone <- data.frame(Recall = pr_gpt4_standalone[,"recall"], Precision = pr_gpt4_standalone[,"precision"], Model = 'GPT-4_wopp')
-df_Llama3_standalone <- data.frame(Recall = pr_Llama3_standalone[,"recall"], Precision = pr_Llama3_standalone[,"precision"], Model = 'Llama-3_wopp')
+df_gpt4_CA <- data.frame(Recall = pr_gpt4_CA[,"recall"], Precision = pr_gpt4_CA[,"precision"], Model = 'GPT-4 + GCA')
+df_Llama3_CA <- data.frame(Recall = pr_Llama3_CA[,"recall"], Precision = pr_Llama3_CA[,"precision"], Model = 'Llama-3 + GCA')
+df_gpt4_standalone <- data.frame(Recall = pr_gpt4_standalone[,"recall"], Precision = pr_gpt4_standalone[,"precision"], Model = 'GPT-4 standalone')
+df_Llama3_standalone <- data.frame(Recall = pr_Llama3_standalone[,"recall"], Precision = pr_Llama3_standalone[,"precision"], Model = 'Llama-3 standalone')
 
 
 # Combining all data frames into one
@@ -213,33 +213,34 @@ AUC_lstm = 0
 for(i in 2:dim(df_lstm)[1]){
   AUC_lstm = AUC_lstm + ((df_lstm$Recall[i-1] - df_lstm$Recall[i]) * ((df_lstm$Precision[i-1] + df_lstm$Precision[i])/2)   )
 }
-AUC_gpt4 = 0
+AUC_gpt4_CA= 0
 for(i in 2:dim(df_gpt4_CA)[1]){
-  AUC_gpt4 = AUC_gpt4 + ((df_gpt4_CA$Recall[i-1] - df_gpt4_CA$Recall[i]) * ((df_gpt4_CA$Precision[i-1] + df_gpt4_CA$Precision[i])/2)   )
+  AUC_gpt4_CA= AUC_gpt4_CA+ ((df_gpt4_CA$Recall[i-1] - df_gpt4_CA$Recall[i]) * ((df_gpt4_CA$Precision[i-1] + df_gpt4_CA$Precision[i])/2)   )
 }
-AUC_Llama3 = 0
+AUC_Llama3_CA = 0
 for(i in 2:dim(df_Llama3_CA)[1]){
-  AUC_Llama3 = AUC_Llama3 + ((df_Llama3_CA$Recall[i-1] - df_Llama3_CA$Recall[i]) * ((df_Llama3_CA$Precision[i-1] + df_Llama3_CA$Precision[i])/2)   )
+  AUC_Llama3_CA = AUC_Llama3_CA + ((df_Llama3_CA$Recall[i-1] - df_Llama3_CA$Recall[i]) * ((df_Llama3_CA$Precision[i-1] + df_Llama3_CA$Precision[i])/2)   )
 }
-AUC_gpt4_wopp = 0
+AUC_gpt4_standalone = 0
 for(i in 2:dim(df_gpt4_standalone)[1]){
-  AUC_gpt4_wopp = AUC_gpt4_wopp + ((df_gpt4_standalone$Recall[i-1] - df_gpt4_standalone$Recall[i]) * ((df_gpt4_standalone$Precision[i-1] + df_gpt4_standalone$Precision[i])/2)   )
+  AUC_gpt4_standalone = AUC_gpt4_standalone + ((df_gpt4_standalone$Recall[i-1] - df_gpt4_standalone$Recall[i]) * ((df_gpt4_standalone$Precision[i-1] + df_gpt4_standalone$Precision[i])/2)   )
 }
-AUC_Llama3_wopp = 0
+AUC_Llama3_standalone = 0
 for(i in 2:dim(df_Llama3_standalone)[1]){
-  AUC_Llama3_wopp = AUC_Llama3_wopp + ((df_Llama3_standalone$Recall[i-1] - df_Llama3_standalone$Recall[i]) * ((df_Llama3_standalone$Precision[i-1] + df_Llama3_standalone$Precision[i])/2)   )
+  AUC_Llama3_standalone = AUC_Llama3_standalone + ((df_Llama3_standalone$Recall[i-1] - df_Llama3_standalone$Recall[i]) * ((df_Llama3_standalone$Precision[i-1] + df_Llama3_standalone$Precision[i])/2)   )
 }
 
 
-pr_data$Model[pr_data$Model=="GPT-4"] = paste(      "GPT-4 + GCA   : ",round(AUC_gpt4,2)," ± ",round(1.96*(AUC_gpt4)*(1-AUC_gpt4)/sqrt(length(index) * length(category) * length(tone)),4)*1000,"e-4",sep="")
-pr_data$Model[pr_data$Model=="Llama-3"] = paste(    "Llama 3  + GCA   : ",round(AUC_Llama3,2)," ± ",round(1.96*(AUC_Llama3)*(1-AUC_Llama3)/sqrt(length(index) * length(category) * length(tone)),4)*1000,"e-4",sep="")
-pr_data$Model[pr_data$Model=="GPT-4_wopp"] = paste(      "GPT 4 standalone   : ",round(AUC_gpt4_wopp,2)," ± ",round(1.96*(AUC_gpt4_wopp)*(1-AUC_gpt4_wopp)/sqrt(length(index) * length(category) * length(tone)),4)*1000,"e-4",sep="")
-pr_data$Model[pr_data$Model=="Llama-3_wopp"] = paste(    "Llama 3 standalone   : ",round(AUC_Llama3_wopp,2)," ± ",round(1.96*(AUC_Llama3_wopp)*(1-AUC_Llama3_wopp)/sqrt(length(index) * length(category) * length(tone)),4)*1000,"e-4",sep="")
+pr_data$Model[pr_data$Model=="GPT-4 + GCA"] = paste(      "GPT-4 + GCA   : ",round(AUC_gpt4_CA,2)," ± ",round(1.96*(AUC_gpt4_CA)*(1-AUC_gpt4_CA)/sqrt(length(index) * length(category) * length(tone)),4)*1000,"e-4",sep="")
+pr_data$Model[pr_data$Model=="Llama-3 + GCA"] = paste(    "Llama 3  + GCA   : ",round(AUC_Llama3_CA,2)," ± ",round(1.96*(AUC_Llama3_CA)*(1-AUC_Llama3_CA)/sqrt(length(index) * length(category) * length(tone)),4)*1000,"e-4",sep="")
+pr_data$Model[pr_data$Model=="GPT-4 standalone"] = paste(      "GPT 4 standalone   : ",round(AUC_gpt4_standalone,2)," ± ",round(1.96*(AUC_gpt4_standalone)*(1-AUC_gpt4_standalone)/sqrt(length(index) * length(category) * length(tone)),4)*1000,"e-4",sep="")
+pr_data$Model[pr_data$Model=="Llama-3 standalone"] = paste(    "Llama 3 standalone   : ",round(AUC_Llama3_standalone,2)," ± ",round(1.96*(AUC_Llama3_standalone)*(1-AUC_Llama3_standalone)/sqrt(length(index) * length(category) * length(tone)),4)*1000,"e-4",sep="")
 pr_data$Model[pr_data$Model=="LSTM"] = paste(       "LSTM   : ",round(AUC_lstm,2)," ± ",round(1.96*(AUC_lstm)*(1-AUC_lstm)/sqrt(length(index) * length(category) * length(tone)),4)*1000,"e-4",sep="")
 pr_data$Model[pr_data$Model=="Naive Bayes"] = paste("NB   : ",round(AUC_nb,2)," ± ",round(1.96*(AUC_nb)*(1-AUC_nb)/sqrt(length(index) * length(category) * length(tone)),4)*1000,"e-4",sep="")
 pr_data$Model[pr_data$Model=="Regex"] = paste(      "Regex   : ",round(AUC_regex,2)," ± ",round(1.96*(AUC_regex)*(1-AUC_regex)/sqrt(length(index) * length(category) * length(tone)),4)*1000,"e-4",sep="")
 colnames(pr_data)[3] = "Model : pr-AUC"
 
+# reorder the labels
 pr_data$`Model : pr-AUC` = factor(pr_data$`Model : pr-AUC`, levels=names(table(pr_data$`Model : pr-AUC`))[c(6,5,7,4,3,2,1)])
 
 
@@ -278,7 +279,7 @@ print(plot)
 
 
 
-# ----------------- Sub groups analysis -----------------
+# ----------------- Appendix 4 : Benchmark Sub groups analysis -----------------
 
 plots = list()
 AUCs = data.frame(
@@ -287,8 +288,8 @@ AUCs = data.frame(
   AUC_regex = vector(),
   AUC_nb = vector(),
   AUC_lstm = vector(),
-  AUC_gpt4 = vector(),
-  AUC_Llama3 = vector(),
+  AUC_gpt4_standalone= vector(),
+  AUC_Llama3_standalone = vector(),
   AUC_gpt4_CA = vector(),
   AUC_Llama3_CA = vector()
 )
@@ -299,7 +300,7 @@ for(current_category in category){
     matrix_NB = readRDS("data/NB/matrix_NB.rds")
     matrix_LSTM = readRDS("data/LSTM/matrix_LSTM.rds")
     matrix_GPT4_standalone = readRDS("data/GPT4/matrix_GPT4_standalone.rds")
-    matrix_Llama3_standalone = readRDS("data/Llama3/matrix_Llama3_CA_standalone.rds")
+    matrix_Llama3_standalone = readRDS("data/Llama3/matrix_Llama3_standalone.rds")
     matrix_GPT4_CA = readRDS("data/GPT4/matrix_GPT4_CA.rds")
     matrix_Llama3_CA = readRDS("data/Llama3/matrix_Llama3_CA.rds")
     matrix_GS = readRDS("data/gold_standard/matrix_GS.rds")
@@ -346,13 +347,13 @@ for(current_category in category){
     pr_lstm = rbind(c(0,max(pr_lstm[,"recall"])+0.0001),pr_lstm,c(max(pr_lstm[,"precision"]),0))
     
     # precision and recall curve computation for GPT4 standalone
-    pr_gpt4_CA = matrix(nrow=0,ncol=2, dimnames = list(logical(),c("precision","recall")))
+    pr_gpt4_standalone = matrix(nrow=0,ncol=2, dimnames = list(logical(),c("precision","recall")))
     for(i in thresholds){
       if(length(which(matrix_GPT4_standalone>=i)) >0) precision = length(which(matrix_GPT4_standalone[matrix_GS==1]>=i)) / length(which(matrix_GPT4_standalone>=i)) else precision=0
       if(length(which(matrix_GS==1))) recall = length(which(matrix_GPT4_standalone[matrix_GS==1]>=i)) / length(which(matrix_GS==1)) else recall = 0
-      pr_gpt4_CA = rbind(pr_gpt4_CA, c(precision,recall))
+      pr_gpt4_standalone = rbind(pr_gpt4_standalone, c(precision,recall))
     }
-    pr_gpt4_CA = rbind(c(0,max(pr_gpt4_CA[,"recall"])+0.0001),pr_gpt4_CA,c(max(pr_gpt4_CA[,"precision"]),0))
+    pr_gpt4_standalone = rbind(c(0,max(pr_gpt4_standalone[,"recall"])+0.0001),pr_gpt4_standalone,c(max(pr_gpt4_standalone[,"precision"]),0))
     
     # precision and recall curve computation for Llama3 standalone
     pr_Llama3_CA = matrix(nrow=0,ncol=2, dimnames = list(logical(),c("precision","recall")))
@@ -364,13 +365,13 @@ for(current_category in category){
     pr_Llama3_CA = rbind(c(0,max(pr_Llama3_CA[,"recall"])+0.0001),pr_Llama3_CA,c(max(pr_Llama3_CA[,"precision"]),0))
     
     # precision and recall curve computation for GPT4_CA
-    pr_gpt4_CA_CA = matrix(nrow=0,ncol=2, dimnames = list(logical(),c("precision","recall")))
+    pr_gpt4_CA = matrix(nrow=0,ncol=2, dimnames = list(logical(),c("precision","recall")))
     for(i in thresholds){
       if(length(which(matrix_GPT4_CA>=i)) >0) precision = length(which(matrix_GPT4_CA[matrix_GS==1]>=i)) / length(which(matrix_GPT4_CA>=i)) else precision=0
       if(length(which(matrix_GS==1))) recall = length(which(matrix_GPT4_CA[matrix_GS==1]>=i)) / length(which(matrix_GS==1)) else recall = 0
-      pr_gpt4_CA_CA = rbind(pr_gpt4_CA_CA, c(precision,recall))
+      pr_gpt4_CA = rbind(pr_gpt4_CA, c(precision,recall))
     }
-    pr_gpt4_CA_CA = rbind(c(0,max(pr_gpt4_CA_CA[,"recall"])+0.0001),pr_gpt4_CA_CA,c(max(pr_gpt4_CA_CA[,"precision"]),0))
+    pr_gpt4_CA = rbind(c(0,max(pr_gpt4_CA[,"recall"])+0.0001),pr_gpt4_CA,c(max(pr_gpt4_CA[,"precision"]),0))
     
     # precision and recall curve computation for Llama3_CA
     pr_Llama3_CA_CA = matrix(nrow=0,ncol=2, dimnames = list(logical(),c("precision","recall")))
@@ -387,10 +388,10 @@ for(current_category in category){
     df_regex <- data.frame(Recall = c(max(pr_regex[,"recall"], na.rm = T),pr_regex[,"recall"],0), Precision = c(0,pr_regex[,"precision"],max(pr_regex[,"precision"], na.rm = T)), Model = 'Regex')
     df_nb <- data.frame(Recall = c(max(pr_nb[,"recall"], na.rm = T),pr_nb[,"recall"],0), Precision = c(0,pr_nb[,"precision"],max(pr_nb[,"precision"], na.rm = T)), Model = 'Naive Bayes')
     df_lstm <- data.frame(Recall = c(max(pr_lstm[,"recall"], na.rm = T),pr_lstm[,"recall"],0), Precision = c(0,pr_lstm[,"precision"],max(pr_lstm[,"precision"], na.rm = T)), Model = 'LSTM')
-    df_gpt4_CA <- data.frame(Recall = c(max(pr_gpt4_CA[,"recall"], na.rm = T),pr_gpt4_CA[,"recall"],0), Precision = c(0,pr_gpt4_CA[,"precision"],max(pr_gpt4_CA[,"precision"], na.rm = T)), Model = 'GPT-4')
-    df_Llama3_CA <- data.frame(Recall = c(max(pr_Llama3_CA[,"recall"], na.rm = T),pr_Llama3_CA[,"recall"],0), Precision = c(0,pr_Llama3_CA[,"precision"],max(pr_Llama3_CA[,"precision"], na.rm = T)), Model = 'Llama-3')
-    df_gpt4_CA_CA <- data.frame(Recall = c(max(pr_gpt4_CA_CA[,"recall"], na.rm = T),pr_gpt4_CA_CA[,"recall"],0), Precision = c(0,pr_gpt4_CA_CA[,"precision"],max(pr_gpt4_CA_CA[,"precision"], na.rm = T)), Model = 'GPT-4_CA')
-    df_Llama3_CA_CA <- data.frame(Recall = c(max(pr_Llama3_CA_CA[,"recall"], na.rm = T),pr_Llama3_CA_CA[,"recall"],0), Precision = c(0,pr_Llama3_CA_CA[,"precision"],max(pr_Llama3_CA_CA[,"precision"], na.rm = T)), Model = 'Llama-3_CA')
+    df_gpt4_standalone <- data.frame(Recall = c(max(pr_gpt4_standalone[,"recall"], na.rm = T),pr_gpt4_standalone[,"recall"],0), Precision = c(0,pr_gpt4_standalone[,"precision"],max(pr_gpt4_standalone[,"precision"], na.rm = T)), Model = 'GPT-4')
+    df_Llama3_standalone <- data.frame(Recall = c(max(pr_Llama3_CA[,"recall"], na.rm = T),pr_Llama3_CA[,"recall"],0), Precision = c(0,pr_Llama3_CA[,"precision"],max(pr_Llama3_CA[,"precision"], na.rm = T)), Model = 'Llama-3')
+    df_gpt4_CA <- data.frame(Recall = c(max(pr_gpt4_CA[,"recall"], na.rm = T),pr_gpt4_CA[,"recall"],0), Precision = c(0,pr_gpt4_CA[,"precision"],max(pr_gpt4_CA[,"precision"], na.rm = T)), Model = 'GPT-4_CA')
+    df_Llama3_standalone_CA <- data.frame(Recall = c(max(pr_Llama3_CA_CA[,"recall"], na.rm = T),pr_Llama3_CA_CA[,"recall"],0), Precision = c(0,pr_Llama3_CA_CA[,"precision"],max(pr_Llama3_CA_CA[,"precision"], na.rm = T)), Model = 'Llama-3_CA')
     
     
     
@@ -407,21 +408,21 @@ for(current_category in category){
       if(df_lstm$Recall[i] >= df_lstm$Recall[i-1]| is.na(df_lstm$Recall[i])) df_lstm$Recall[i] = df_lstm$Recall[i-1]- 0.00001
       if(df_lstm$Precision[i] <= df_lstm$Precision[i-1]| is.na(df_lstm$Precision[i])) df_lstm$Precision[i] = df_lstm$Precision[i-1]+ 0.00001
     }
+    for(i in 2:dim(df_gpt4_standalone)[1]){
+      if(df_gpt4_standalone$Recall[i] >= df_gpt4_standalone$Recall[i-1]| is.na(df_gpt4_standalone$Recall[i])) df_gpt4_standalone$Recall[i] = df_gpt4_standalone$Recall[i-1]- 0.00001
+      if(df_gpt4_standalone$Precision[i] <= df_gpt4_standalone$Precision[i-1]| is.na(df_gpt4_standalone$Precision[i])) df_gpt4_standalone$Precision[i] = df_gpt4_standalone$Precision[i-1]+ 0.00001
+    }
+    for(i in 2:dim(df_Llama3_standalone)[1]){
+      if(df_Llama3_standalone$Recall[i] >= df_Llama3_standalone$Recall[i-1]| is.na(df_Llama3_standalone$Recall[i])) df_Llama3_standalone$Recall[i] = df_Llama3_standalone$Recall[i-1]- 0.00001
+      if(df_Llama3_standalone$Precision[i] <= df_Llama3_standalone$Precision[i-1]| is.na(df_Llama3_standalone$Precision[i])) df_Llama3_standalone$Precision[i] = df_Llama3_standalone$Precision[i-1]+ 0.00001
+    }
     for(i in 2:dim(df_gpt4_CA)[1]){
       if(df_gpt4_CA$Recall[i] >= df_gpt4_CA$Recall[i-1]| is.na(df_gpt4_CA$Recall[i])) df_gpt4_CA$Recall[i] = df_gpt4_CA$Recall[i-1]- 0.00001
       if(df_gpt4_CA$Precision[i] <= df_gpt4_CA$Precision[i-1]| is.na(df_gpt4_CA$Precision[i])) df_gpt4_CA$Precision[i] = df_gpt4_CA$Precision[i-1]+ 0.00001
     }
-    for(i in 2:dim(df_Llama3_CA)[1]){
-      if(df_Llama3_CA$Recall[i] >= df_Llama3_CA$Recall[i-1]| is.na(df_Llama3_CA$Recall[i])) df_Llama3_CA$Recall[i] = df_Llama3_CA$Recall[i-1]- 0.00001
-      if(df_Llama3_CA$Precision[i] <= df_Llama3_CA$Precision[i-1]| is.na(df_Llama3_CA$Precision[i])) df_Llama3_CA$Precision[i] = df_Llama3_CA$Precision[i-1]+ 0.00001
-    }
-    for(i in 2:dim(df_gpt4_CA_CA)[1]){
-      if(df_gpt4_CA_CA$Recall[i] >= df_gpt4_CA_CA$Recall[i-1]| is.na(df_gpt4_CA_CA$Recall[i])) df_gpt4_CA_CA$Recall[i] = df_gpt4_CA_CA$Recall[i-1]- 0.00001
-      if(df_gpt4_CA_CA$Precision[i] <= df_gpt4_CA_CA$Precision[i-1]| is.na(df_gpt4_CA_CA$Precision[i])) df_gpt4_CA_CA$Precision[i] = df_gpt4_CA_CA$Precision[i-1]+ 0.00001
-    }
-    for(i in 2:dim(df_Llama3_CA_CA)[1]){
-      if(df_Llama3_CA_CA$Recall[i] >= df_Llama3_CA_CA$Recall[i-1]| is.na(df_Llama3_CA_CA$Recall[i])) df_Llama3_CA_CA$Recall[i] = df_Llama3_CA_CA$Recall[i-1]- 0.00001
-      if(df_Llama3_CA_CA$Precision[i] <= df_Llama3_CA_CA$Precision[i-1]| is.na(df_Llama3_CA_CA$Precision[i])) df_Llama3_CA_CA$Precision[i] = df_Llama3_CA_CA$Precision[i-1]+ 0.00001
+    for(i in 2:dim(df_Llama3_standalone_CA)[1]){
+      if(df_Llama3_standalone_CA$Recall[i] >= df_Llama3_standalone_CA$Recall[i-1]| is.na(df_Llama3_standalone_CA$Recall[i])) df_Llama3_standalone_CA$Recall[i] = df_Llama3_standalone_CA$Recall[i-1]- 0.00001
+      if(df_Llama3_standalone_CA$Precision[i] <= df_Llama3_standalone_CA$Precision[i-1]| is.na(df_Llama3_standalone_CA$Precision[i])) df_Llama3_standalone_CA$Precision[i] = df_Llama3_standalone_CA$Precision[i-1]+ 0.00001
     }
     
     
@@ -438,21 +439,21 @@ for(current_category in category){
     for(i in 2:dim(df_lstm)[1]){
       AUC_lstm = AUC_lstm + ((df_lstm$Recall[i-1] - df_lstm$Recall[i]) * ((df_lstm$Precision[i-1] + df_lstm$Precision[i])/2)   )
     }
-    AUC_gpt4 = 0
-    for(i in 2:dim(df_gpt4_CA)[1]){
-      AUC_gpt4 = AUC_gpt4 + ((df_gpt4_CA$Recall[i-1] - df_gpt4_CA$Recall[i]) * ((df_gpt4_CA$Precision[i-1] + df_gpt4_CA$Precision[i])/2)   )
+    AUC_gpt4_standalone= 0
+    for(i in 2:dim(df_gpt4_standalone)[1]){
+      AUC_gpt4_standalone= AUC_gpt4_standalone+ ((df_gpt4_standalone$Recall[i-1] - df_gpt4_standalone$Recall[i]) * ((df_gpt4_standalone$Precision[i-1] + df_gpt4_standalone$Precision[i])/2)   )
     }
-    AUC_Llama3 = 0
-    for(i in 2:dim(df_Llama3_CA)[1]){
-      AUC_Llama3 = AUC_Llama3 + ((df_Llama3_CA$Recall[i-1] - df_Llama3_CA$Recall[i]) * ((df_Llama3_CA$Precision[i-1] + df_Llama3_CA$Precision[i])/2)   )
+    AUC_Llama3_standalone = 0
+    for(i in 2:dim(df_Llama3_standalone)[1]){
+      AUC_Llama3_standalone = AUC_Llama3_standalone + ((df_Llama3_standalone$Recall[i-1] - df_Llama3_standalone$Recall[i]) * ((df_Llama3_standalone$Precision[i-1] + df_Llama3_standalone$Precision[i])/2)   )
     }
     AUC_gpt4_CA = 0
-    for(i in 2:dim(df_gpt4_CA_CA)[1]){
-      AUC_gpt4_CA = AUC_gpt4_CA + ((df_gpt4_CA_CA$Recall[i-1] - df_gpt4_CA_CA$Recall[i]) * ((df_gpt4_CA_CA$Precision[i-1] + df_gpt4_CA_CA$Precision[i])/2)   )
+    for(i in 2:dim(df_gpt4_CA)[1]){
+      AUC_gpt4_CA = AUC_gpt4_CA + ((df_gpt4_CA$Recall[i-1] - df_gpt4_CA$Recall[i]) * ((df_gpt4_CA$Precision[i-1] + df_gpt4_CA$Precision[i])/2)   )
     }
     AUC_Llama3_CA = 0
-    for(i in 2:dim(df_Llama3_CA_CA)[1]){
-      AUC_Llama3_CA = AUC_Llama3_CA + ((df_Llama3_CA_CA$Recall[i-1] - df_Llama3_CA_CA$Recall[i]) * ((df_Llama3_CA_CA$Precision[i-1] + df_Llama3_CA_CA$Precision[i])/2)   )
+    for(i in 2:dim(df_Llama3_standalone_CA)[1]){
+      AUC_Llama3_CA = AUC_Llama3_CA + ((df_Llama3_standalone_CA$Recall[i-1] - df_Llama3_standalone_CA$Recall[i]) * ((df_Llama3_standalone_CA$Precision[i-1] + df_Llama3_standalone_CA$Precision[i])/2)   )
     }
     
     
@@ -467,8 +468,8 @@ for(current_category in category){
       AUC_regex = AUC_regex,
       AUC_nb = AUC_nb,
       AUC_lstm = AUC_lstm,
-      AUC_gpt4 = AUC_gpt4,
-      AUC_Llama3 = AUC_Llama3,
+      AUC_gpt4_standalone= AUC_gpt4_standalone,
+      AUC_Llama3_standalone = AUC_Llama3_standalone,
       AUC_gpt4_CA = AUC_gpt4_CA,
       AUC_Llama3_CA = AUC_Llama3_CA
     )
@@ -484,24 +485,24 @@ AUCs2 = AUCs
 AUCs2$AUC_regex =  paste( round(AUCs$AUC_regex,2) , "±", round(1.96*(AUCs$AUC_regex)*(1-AUCs$AUC_regex)/sqrt(length(index)),2) )
 AUCs2$AUC_nb =  paste( round(AUCs$AUC_nb,2) , "±", round(1.96*(AUCs$AUC_nb)*(1-AUCs$AUC_nb)/sqrt(length(index)),2) )
 AUCs2$AUC_lstm =  paste( round(AUCs$AUC_lstm,2) , "±", round(1.96*(AUCs$AUC_lstm)*(1-AUCs$AUC_lstm)/sqrt(length(index)),2) )
-AUCs2$AUC_gpt4 =  paste( round(AUCs$AUC_gpt4,2) , "±", round(1.96*(AUCs$AUC_gpt4)*(1-AUCs$AUC_gpt4)/sqrt(length(index)),2) )
-AUCs2$AUC_Llama3 =  paste( round(AUCs$AUC_Llama3,2) , "±", round(1.96*(AUCs$AUC_Llama3)*(1-AUCs$AUC_Llama3)/sqrt(length(index)),2) )
+AUCs2$AUC_gpt4_standalone=  paste( round(AUCs$AUC_gpt4_standalone,2) , "±", round(1.96*(AUCs$AUC_gpt4_standalone)*(1-AUCs$AUC_gpt4_standalone)/sqrt(length(index)),2) )
+AUCs2$AUC_Llama3_standalone =  paste( round(AUCs$AUC_Llama3_standalone,2) , "±", round(1.96*(AUCs$AUC_Llama3_standalone)*(1-AUCs$AUC_Llama3_standalone)/sqrt(length(index)),2) )
 AUCs2$AUC_gpt4_CA =  paste( round(AUCs$AUC_gpt4_CA,2) , "±", round(1.96*(AUCs$AUC_gpt4_CA)*(1-AUCs$AUC_gpt4_CA)/sqrt(length(index)),2) )
 AUCs2$AUC_Llama3_CA =  paste( round(AUCs$AUC_Llama3_CA,2) , "±", round(1.96*(AUCs$AUC_Llama3_CA)*(1-AUCs$AUC_Llama3_CA)/sqrt(length(index)),2) )
 
 AUCs$AUC_regex[AUCs$AUC_regex>1] = 1
 AUCs$AUC_nb[AUCs$AUC_nb>1] = 1
 AUCs$AUC_lstm[AUCs$AUC_lstm>1] = 1
-AUCs$AUC_gpt4[AUCs$AUC_gpt4>1] = 1
-AUCs$AUC_Llama3[AUCs$AUC_Llama3>1] = 1
+AUCs$AUC_gpt4_standalone[AUCs$AUC_gpt4_standalone>1] = 1
+AUCs$AUC_Llama3_standalone[AUCs$AUC_Llama3_standalone>1] = 1
 AUCs$AUC_gpt4_CA[AUCs$AUC_gpt4_CA>1] = 1
 AUCs$AUC_Llama3_CA[AUCs$AUC_Llama3_CA>1] = 1
 
 AUCs$AUC_regex = round(AUCs$AUC_regex,3)
 AUCs$AUC_nb = round(AUCs$AUC_nb,3)
 AUCs$AUC_lstm = round(AUCs$AUC_lstm,3)
-AUCs$AUC_gpt4 = round(AUCs$AUC_gpt4,3)
-AUCs$AUC_Llama3 = round(AUCs$AUC_Llama3,3)
+AUCs$AUC_gpt4_standalone= round(AUCs$AUC_gpt4_standalone,3)
+AUCs$AUC_Llama3_standalone = round(AUCs$AUC_Llama3_standalone,3)
 AUCs$AUC_gpt4_CA = round(AUCs$AUC_gpt4_CA,3)
 AUCs$AUC_Llama3_CA = round(AUCs$AUC_Llama3_CA,3)
 
@@ -521,7 +522,7 @@ write.xlsx(AUCs2, "Sub_groups_AUCs_character.xlsx")
 
 library(formattable)
 
-colnames(AUCs) = c("Categories - tones","Frequency do identify","Regex AUC","Naive Bayes AUC", "LSTM AUC", "GPT-4 AUC", "Llama-3 AUC","GPT-4 CA AUC", "Llama-3 CA AUC")
+colnames(AUCs) = c("Categories - tones","Frequency do identify","Regex AUC","Naive Bayes AUC", "LSTM AUC", "GPT-4 standalone AUC", "Llama-3 standalone AUC","GPT-4 GCA AUC", "Llama-3 GCA AUC")
 
 #Translation of the categories in english
 for(current_category in 1:length(category)){
@@ -536,10 +537,10 @@ pretty_table <- formattable(AUCs, list(
   `Regex AUC` = color_tile("white", "lightgreen"),
   `Naive Bayes AUC` = color_tile("white", "lightgreen"),
   `LSTM AUC` = color_tile("white", "lightgreen"),
-  `GPT-4 AUC` = color_tile("white", "lightgreen"),
-  `Llama-3 AUC` = color_tile("white", "lightgreen"),
-  `GPT-4 CA AUC` = color_tile("white", "lightgreen"),
-  `Llama-3 CA AUC` = color_tile("white", "lightgreen")
+  `GPT-4 standalone AUC` = color_tile("white", "lightgreen"),
+  `Llama-3 standalone AUC` = color_tile("white", "lightgreen"),
+  `GPT-4 GCA AUC` = color_tile("white", "lightgreen"),
+  `Llama-3 GCA AUC` = color_tile("white", "lightgreen")
 ))
 
 # Print the table

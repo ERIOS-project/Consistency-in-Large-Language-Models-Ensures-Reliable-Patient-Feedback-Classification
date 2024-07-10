@@ -4,7 +4,7 @@
 agent = c("1","2","3")
 
 # Create the array squeleton
-matrix_llmsa = array(data=0, dim=c(
+matrix_GPT4_standalone = array(data=0, dim=c(
   length(index),
   length(category),
   length(tone),
@@ -33,15 +33,15 @@ for(current_agent in 1:length(agent)){
       # If there is a positive tone mentionned :
       if(grepl("positive", input[row]))if(substr(input[row],nchar('"positive": "')+1,nchar(input[row])-2)!="")
       {
-        matrix_llmsa[i,current_category,"positive",current_agent] = 1
+        matrix_GPT4_standalone[i,current_category,"positive",current_agent] = 1
       }
       # If there is a negative tone mentionned :
       if(grepl("negative", input[row]))if(substr(input[row],nchar('"negative": "')+1,nchar(input[row])-2)!="")
       {
-        matrix_llmsa[i,current_category,"negative",current_agent] = 1
+        matrix_GPT4_standalone[i,current_category,"negative",current_agent] = 1
       }
     }
   }
 }
 
-saveRDS(matrix_llmsa, "data/GPT4/matrix_GPT4_standalone.rds")
+saveRDS(matrix_GPT4_standalone, "data/GPT4/matrix_GPT4_standalone.rds")

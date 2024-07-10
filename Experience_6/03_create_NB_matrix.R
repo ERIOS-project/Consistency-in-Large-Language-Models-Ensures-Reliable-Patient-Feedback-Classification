@@ -110,4 +110,4 @@ for(i in 1:ncol(folds)){
 }
 # When there is very few values of a class in the Gold Standard, the prediction fails to provide a probability. by argument frequence, we automatically set these values to 0
 matrixNB[is.na(matrixNB)] = 0
-saveRDS(matrixNB, "data/NB/matrixNB.rds")
+saveRDS(matrixNB, "data/NB/matrix_NB.rds")

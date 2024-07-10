@@ -31,7 +31,7 @@ verbatims =  pad_sequences(sequences)
 # for 158 columns (max length for any verbatim in this set)
 
 
-# The 10-folds takes about 3 days on a i7 processor.
+# The 10-folds takes about 3 days computation on a i7 processor.
 
 for(i in 1:ncol(folds)){
   print("-----------------------------------------------------------------------------------------------------")

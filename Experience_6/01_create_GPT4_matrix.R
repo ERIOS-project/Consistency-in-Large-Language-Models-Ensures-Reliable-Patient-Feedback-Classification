@@ -162,7 +162,7 @@ matrix_justif[is.na(matrix_justif)]=""
 
 matrix_cross_selection = (matrix_class[,,,"LLM1"] + matrix_class[,,,"LLM2"])/2
 matrix_1 = matrix_class[,,,"LLM1"]
-saveRDS(matrix_1,"data/GPT4/matrixGPT4_standalone.rds" )
+saveRDS(matrix_1,"data/GPT4/matrix_GPT4_standalone.rds" )
 
 # The justification follows the given syntax :
 # " element | citation "
@@ -284,4 +284,4 @@ matrix_confidence = matrix_confidence[,,,scores=="score_total"]
 matrix_confidence = matrix_confidence/35
 
 
-saveRDS(matrix_confidence,"data/GPT4/matrixGPT4_CA.rds")
+saveRDS(matrix_confidence,"data/GPT4/matrix_GPT4_CA.rds")

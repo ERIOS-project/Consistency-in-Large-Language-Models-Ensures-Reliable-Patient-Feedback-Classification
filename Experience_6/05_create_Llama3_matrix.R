@@ -160,7 +160,7 @@ matrix_justif[is.na(matrix_justif)]=""
 
 matrix_cross_selection = (matrix_class[,,,"LLM1"] + matrix_class[,,,"LLM2"])/2
 matrix_1 = matrix_class[,,,"LLM1"]
-saveRDS(matrix_1,"data/Llama3/matrixLlama3_wo_postprod.rds" )
+saveRDS(matrix_1,"data/Llama3/matrix_Llama3_standalone.rds" )
 
 
 # The justification follows the given syntax :
@@ -285,4 +285,4 @@ matrix_confidence = matrix_confidence[,,,scores=="score_total"]
 matrix_confidence = matrix_confidence/35
 
 
-saveRDS(matrix_confidence,"data/Llama3/matrix_Llama3.rds")
+saveRDS(matrix_confidence,"data/Llama3/matrix_Llama3_CA.rds")

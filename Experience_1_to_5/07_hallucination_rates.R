@@ -21,6 +21,8 @@ matrix_GS2[,,,1] = matrix_GS
 matrix_GS2[,,,2] = matrix_GS
 matrix_GS2[,,,3] = matrix_GS
 
+# Each error have to be checked by hand by an hospital quality of care expert to judge if it corresponds to an hallucination or not.
+# Files can be produced from the output of the script "06_create GPT4_CA_errorlist.R" and a new column named "hallucination" have to be inserted, taking the value of 1 if there is an hallucination, 0 otherwise. 
 
 #GPT 4 alone
 library(xlsx)

@@ -19,7 +19,7 @@
       "element_16": "Défaut de coordination entre équipes et / ou services ; Qualité des communications entre professionnels de santé",
       "element_17": "Transfert par manque de lits ou places, placement dans une structure éloignée de la famille,"
     },
-    "Le circuit administratif": {
+    "L’accueil et l’admission": {
       "element_1": "Lieu de l’accueil administratif",
       "element_2": "Temps d’attente lors des démarches d’admission administrative",
       "element_3": "Nombre de personnels en charge des démarches d’admission administrative",
@@ -28,7 +28,7 @@
       "element_6": "Contact (amabilité, impersonnalité, empathie, accompagnement, disponibilité) des agents en charge de l’admission administrative",
       "element_7": "Préadmission administrative numérique"
     },
-    "Circuit administratif": {
+    "Le circuit administratif": {
       "element_1": "Démarches administratives relatives au séjour",
       "element_2": "Nombre et répétition de documents à remplir",
       "element_3": "Complexité des parcours administratifs",
@@ -87,7 +87,7 @@
     }
   },
   "Le professionnalisme et la prise en charge médicale et paramédicale": {
-    "L’information et les explications ": {
+    "L’information et les explications": {
       "element_1": "Explications claires et précises relatives à une maladie, un traitement ou un pronostic, délivrées lors d’une consultation avec un médecin",
       "element_2": "Explications concernant les risques, les conséquences de la maladie",
       "element_3": "Explications concernant la planification de la prise en charge",
@@ -210,7 +210,7 @@
       "element_6": "Signalétique intra hospitalière et informations sur l’emplacement des différents services, y compris depuis les admissions",
       "element_7": "Modalités, locaux et horaires d’accès pour les visiteurs, accompagnants, familles, dont visites COVID"
     },
-    "Les locaux et les chambres ": {
+    "Les locaux et les chambres": {
       "element_1": "Vétusté des locaux et des chambres",
       "element_2": "Propreté des locaux et des chambres",
       "element_3": "Entretien et maintenance des équipements des chambres",
@@ -243,7 +243,7 @@
       "element_30": "Caractère agréable et spacieux de la chambre",
       "element_31": "Nuisances lumineuses"
     },
-    "L’intimité ": {
+    "L’intimité": {
       "element_1": "Accès à une chambre individuelle",
       "element_2": "Respect de l’intimité du patient et de sa pudeur personnelle",
       "element_3": "Séparations entre patients en chambre commune",
@@ -260,7 +260,7 @@
       "element_6": "Bruits provoqué par un voisin de chambre",
       "element_7": "Bruits de climatisation"
     },
-    "La température de la chambre ": {
+    "La température de la chambre": {
       "element_1": "Isolation thermique de la chambre",
       "element_2": "Adéquation du niveau de chauffage à la température de la chambre",
       "element_3": "Présence d’un système de climatisation en période de fortes chaleurs",
