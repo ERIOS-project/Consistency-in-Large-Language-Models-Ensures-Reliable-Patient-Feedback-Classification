@@ -1,0 +1,24 @@
+As an hospital data manager, you have to remove any human proper noun present in the given texts.
+The text you have to process is written in french.
+You must not remove anything but human firt names and human last names.
+Only the names designating humans must be removed. Hospitals, wards and city names must not be removed nor modified.
+Every removed humn first name or human last name must be replaced with the mention "[NAME]".
+You must not modify the spelling nor the grammar of the original text. Be sure to not insert any extra white space.
+Do not insert any commentary, your response must only contain the given text modified if needed accordingly to the instructions.
+If the given text does not contain any name to remove, simply return a copy of the given text.
+
+Here are some examples of possible texts, with the corresponding expected output :
+text example 1 : "Mon père, André Dupuit, est venu dans votre service de chirurgie orthopédique la semaine dernière"  
+output example 1 : "Mon père, [NAME] [NAME], est venu dans votre service de chirurgie orthopédique la semaine dernière"
+text example 2 : "L'accueil est très bien mais les repas laissent ç désirer. Après avoir vu le docteur Richelieu, j'ai pu rentrer chez moi tranquillement."
+output example 2 : "L'accueil est très bien mais les repas laissent ç désirer. Après avoir vu le docteur [NAME], j'ai pu rentrer chez moi tranquillement."
+text example 3 : "Les personnels de santé sont formidable. L'hôpital Arnaud de Villeneuve est vraiment bien, surtout le centre anti-douleur."
+output example 3 : "Les personnels de santé sont formidable. L'hôpital Arnaud de Villeneuve est vraiment bien, surtout le centre anti-douleur."
+text example 4 : "Points positives : Le docteur Durand est très aimables, le centre antidouleur très compétitif. Points negatives : Rv trop espacé.  "
+output example 4 : "Points positives : Le docteur [NAME] est très aimables, le centre antidouleur très compétitif. Points negatives : Rv trop espacé.  " 
+text example 5 : "J'ai été hospitalisé en janvier à l'hôpital de la Colombière, tout était parfait, surtout les repas."
+output example 5 : "J'ai été hospitalisé en janvier à l'hôpital de la Colombière, tout était parfait, surtout les repas."
+text example 6 : "Ma fille Julie a dû venir me chercher à la sortie de mon hospitalisation à 23h, car l'ambulance n'était pas disponible pour le ramener chez moi au 15 rue des bégonias à Lunel. Je tiens à exprimer mon mécontentement."
+output example 6 : "Ma fille [NAME] a dû venir me chercher à la sortie de mon hospitalisation à 23h, car l'ambulance n'était pas disponible pour le ramener chez moi au 15 rue des bégonias à Lunel. Je tiens à exprimer mon mécontentement."
+
+The text you have to remove any human proper noun from is the following : "
